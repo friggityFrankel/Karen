@@ -4,6 +4,8 @@ from PyQt6.QtWidgets import (QMainWindow, QLabel, QWidget)
 from PyQt6.QtGui import (QMovie, QPixmap)
 
 class ApplicationWindow(QMainWindow):
+    pressedKey = 0
+
     def __init__(self):
         super().__init__()
 
@@ -20,14 +22,18 @@ class ApplicationWindow(QMainWindow):
         self.imageViewer.setScaledContents(True)
     
     def keyPressEvent(self, event):
-        self.changeImage(event)
+        if self.pressedKey != event.key():
+            self.pressedKey = event.key()
+            self.changeImage()
     
     def keyReleaseEvent(self, event):
-        self.imageViewer.setPixmap(QPixmap('images/Neutral.png'))
+        if not event.isAutoRepeat():
+            self.pressedKey = 0
+            self.imageViewer.setPixmap(QPixmap('images/Neutral.png'))
 
     
-    def changeImage(self, event):
-        match event.key():
+    def changeImage(self):
+        match self.pressedKey:
             case 49:
                 movie = QMovie('images/Waveform.gif')
                 self.imageViewer.setMovie(movie)
